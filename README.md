@@ -1,8 +1,43 @@
 # OCP 4.1 on AWS (Official Documentation)
 
-https://docs.openshift.com/container-platform/4.1/installing/installing_aws/installing-aws-account.html
+https://docs.openshift.com/container-platform/4.1/welcome/index.html
 
-## Configuring Route53
+
+## OpenShift Container Platform architecture
+
+### CUSTOM OPERATING SYSTEM
+
+- OpenShift Container Platform uses Red Hat Enterprise Linux CoreOS (RHCOS), a new container-oriented operating system that combines some of the best features and functions of the CoreOS and Red Hat Atomic Host operating systems.
+
+- RHCOS is specifically designed for running containerized applications from OpenShift Container Platform and works with new tools to provide fast installation, Operator-based management, and simplified upgrades.
+
+- RHCOS includes:
+	
+	- Ignition, which is a firstboot system configuration for initially bringing up and configuring OpenShift Container Platform nodes.
+
+	- cri-o, a Kubernetes native container runtime implementation that integrates closely with the operating system to deliver an efficient and optimized Kubernetes experience.
+
+	- Kubelet, the primary node agent for Kubernetes that is responsible for launching and monitoring containers.
+
+
+> In OpenShift Container Platform 4.1, you must use RHCOS for all control plane machines, but you can use Red Hat Enterprise Linux (RHEL) as the operating system for compute, or worker, machines. **If you choose to use RHEL workers, you must perform more system maintenance than if you use RHCOS for all of the cluster machines.**
+
+### SIMPLIFIED INSTALLATION AND UPDATE PROCESS
+
+For clusters that use RHCOS for all machines, updating, or upgrading, OpenShift Container Platform is a simple, highly-automated process. Because OpenShift Container Platform completely controls the systems and services that run on each machine, including the operating system itself, from a central control plane, upgrades are designed to become automatic events. **If your cluster contains RHEL worker machines, the control plane benefits from the streamlined update process, but you must perform more tasks to upgrade the RHEL machines.**
+
+### OTHER KEY FEATURES
+
+- Operators
+
+- OLM (operator lifecycle manager)
+
+- CRIO-O. Container Engine
+
+- Quay. Red hat container registry
+
+
+## Install
 
 ### Register a new domain on aws 
 
@@ -41,7 +76,7 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 
 ```
 
-## AWS account limits
+### AWS account limits
 
 > To avoid reaching the DEFAULT resources limit (per account) on eu-central-1 (Frankfurt) we are going to work on eu-west-2 (London).
 
@@ -76,7 +111,7 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 }
 ```
 
-## Resources to be deployed
+### Resources to be deployed
 
 - 1 VPC
 
@@ -97,4 +132,15 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 - 2 S3 buckets
 
 - 10 Security Groups
+
+
+### Required AWS permissions
+
+When you attach the AdministratorAccess policy to the IAM user that you create, you grant that user all of the required permissions
+
+### Installing a cluster on AWS with customizations
+
+https://docs.openshift.com/container-platform/4.1/installing/installing_aws/installing-aws-customizations.html#installing-aws-customizations
+
+In OpenShift Container Platform version 4.1, you can install a customized cluster on infrastructure that the installation program provisions on Amazon Web Services (AWS). To customize the installation, you modify some parameters in the install-config.yaml file before you install the cluster.
 
