@@ -223,6 +223,8 @@ ssh-add -l
 
 - At the end, the installer will create a [default] section on the aws credential file. **(careful)**
 
+- The Base Domain will be automatically discovered, you can't type!!
+
 ```
 openshift-install create install-config --dir=install_files
 
