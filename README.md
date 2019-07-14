@@ -320,3 +320,11 @@ sshKey: |
 ```
 openshift-install create cluster --dir=install_files --log-level debug
 ```
+
+#### 3.5.6 Destroy the cluster
+
+- **WARNING** This will remove all resources previously created and will delete all the configuration files. So, in case you want the create the cluster again a new **install-config.yaml** need to be generated again or restored from backup.
+
+```
+openshift-install destroy cluster --dir=install_files --log-level debug
+```
