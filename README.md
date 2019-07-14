@@ -356,6 +356,39 @@ INFO Login to the console with user: kubeadmin, password: Tr7gv-indjp-pM6Zw-79x2
 
 ```
 
+
+#### 3.5.7 Destroy the cluster
+
+- **WARNING** This will remove all resources previously created and will delete all the configuration files. So, in case you want the create the cluster again a new **install-config.yaml** need to be generated again or restored from backup.
+
+```
+openshift-install destroy cluster --dir=install_files --log-level debug
+```
+
+
+## 4. Installing the OpenShift Command-line Interface
+
+- Download the last oc version from here https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/
+
+	- This version https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-4.1.4.tar.gz
+
+```
+tar xvf openshift-client-linux-4.1.4.tar.gz
+sudo mv oc /usr/local/bin
+
+oc version
+Client Version: version.Info{Major:"4", Minor:"1+", GitVersion:"v4.1.4-201906271212+6b97d85-dirty", GitCommit:"6b97d85", GitTreeState:"dirty", BuildDate:"2019-06-27T18:11:21Z", GoVersion:"go1.11.6", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"13+", GitVersion:"v1.13.7-eks-c57ff8", GitCommit:"c57ff8e35590932c652433fab07988da79265d5b", GitTreeState:"clean", BuildDate:"2019-06-07T20:43:03Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
+
+```
+
+## 5. Logging into the cluster
+
+```
+export KUBECONFIG=<install path>/install_files/auth/kubeconfig
+oc whoami
+```
+
 - all pods created
 
 ```
@@ -535,34 +568,15 @@ openshift-service-catalog-controller-manager-operator   openshift-service-catalo
 
 ```
 
-#### 3.5.7 Destroy the cluster
 
-- **WARNING** This will remove all resources previously created and will delete all the configuration files. So, in case you want the create the cluster again a new **install-config.yaml** need to be generated again or restored from backup.
+## 6.  identity provider configuration
 
-```
-openshift-install destroy cluster --dir=install_files --log-level debug
-```
+- The OpenShift Container Platform master includes a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API.
 
+- By default, only a kubeadmin user exists on your cluster. To specify an identity provider, you must create a Custom Resource (CR) that describes that identity provider and add it to the cluster.
 
-## 4. Installing the OpenShift Command-line Interface
+- OpenShift Container Platform user names containing /, :, and % are not supported.
 
-- Download the last oc version from here https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/
+### 6.1 Configuring a GitHub or GitHub Enterprise identity provider
 
-	- This version https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-4.1.4.tar.gz
-
-```
-tar xvf openshift-client-linux-4.1.4.tar.gz
-sudo mv oc /usr/local/bin
-
-oc version
-Client Version: version.Info{Major:"4", Minor:"1+", GitVersion:"v4.1.4-201906271212+6b97d85-dirty", GitCommit:"6b97d85", GitTreeState:"dirty", BuildDate:"2019-06-27T18:11:21Z", GoVersion:"go1.11.6", Compiler:"gc", Platform:"linux/amd64"}
-Server Version: version.Info{Major:"1", Minor:"13+", GitVersion:"v1.13.7-eks-c57ff8", GitCommit:"c57ff8e35590932c652433fab07988da79265d5b", GitTreeState:"clean", BuildDate:"2019-06-07T20:43:03Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
-
-```
-
-## 5. Logging into the cluster
-
-```
-export KUBECONFIG=<install path>/install_files/auth/kubeconfig
-oc whoami
-```
+- For GitHub Enterprise, go to your GitHub Enterprise home page and then click Settings → Developer settings → Register a new application.
