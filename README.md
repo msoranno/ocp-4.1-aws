@@ -3,7 +3,7 @@
 https://docs.openshift.com/container-platform/4.1/welcome/index.html
 
 
-## OpenShift Container Platform architecture
+## 1. OpenShift Container Platform architecture
 
 ### CUSTOM OPERATING SYSTEM
 
@@ -37,7 +37,7 @@ For clusters that use RHCOS for all machines, updating, or upgrading, OpenShift 
 - Quay. Red hat container registry
 
 
-## Red Hat Enterprise Linux CoreOS (RHCOS)
+## 2. Red Hat Enterprise Linux CoreOS (RHCOS)
 
 - RHCOS is the only supported operating system for OpenShift Container Platform control plane, or master, machines. While RHCOS is the default operating system for all cluster machines, you can create compute, or worker, machines that use RHEL as their operating system.
 
@@ -55,9 +55,9 @@ For clusters that use RHCOS for all machines, updating, or upgrading, OpenShift 
 
 - 
 
-## Install
+## 3. Install
 
-### Register a new domain on aws 
+### 3.1 Register a new domain on aws 
 
 We are going to register the iaciscp.net
 
@@ -94,7 +94,7 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 
 ```
 
-### AWS account limits
+### 3.2 AWS account limits
 
 > To avoid reaching the DEFAULT resources limit (per account) on eu-central-1 (Frankfurt) we are going to work on eu-west-2 (London).
 
@@ -129,7 +129,7 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 }
 ```
 
-### Resources to be deployed
+### 3.3 Resources to be deployed
 
 - 1 VPC
 
@@ -152,17 +152,17 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 - 10 Security Groups
 
 
-### Required AWS permissions
+### 3.4 Required AWS permissions
 
 When you attach the AdministratorAccess policy to the IAM user that you create, you grant that user all of the required permissions
 
-### Installing a cluster on AWS with customizations
+### 3.5 Installing a cluster on AWS with customizations
 
 https://docs.openshift.com/container-platform/4.1/installing/installing_aws/installing-aws-customizations.html#installing-aws-customizations
 
 In OpenShift Container Platform version 4.1, you can install a customized cluster on infrastructure that the installation program provisions on Amazon Web Services (AWS). To customize the installation, you modify some parameters in the install-config.yaml file before you install the cluster.
 
-#### Obtaining the installation program
+#### 3.5.1 Obtaining the installation program
 
 - go to https://cloud.redhat.com/openshift/install/aws/installer-provisioned
 
@@ -183,7 +183,7 @@ In OpenShift Container Platform version 4.1, you can install a customized cluste
 	```
 
 
-#### Generating an SSH private key and adding it to the agent
+#### 3.5.2 Generating an SSH private key and adding it to the agent
 
 > You can use this key to SSH into the master nodes as the user **core**. When you deploy the cluster, the key is added to the core user’s ~/.ssh/authorized_keys list.
 
@@ -215,7 +215,7 @@ ssh-add -l
 
 ```
 
-#### Creating the installation configuration file
+#### 3.5.3 Creating the installation configuration file
 
 - This process will use the [default] section on your aws credentials file.
 
