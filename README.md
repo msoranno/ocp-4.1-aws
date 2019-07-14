@@ -166,12 +166,13 @@ In OpenShift Container Platform version 4.1, you can install a customized cluste
 
 - go to https://cloud.redhat.com/openshift/install/aws/installer-provisioned
 
-- Then download installer
+- Then download installer & Copy the pull secret 
 
 	https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-install-linux-4.1.4.tar.gz
 
 	```
 	tar xvf openshift-install-linux-4.1.4.tar.gz
+
 	sudo mv openshift-install /usr/local/bin
 
 	[sp81891@oc2157818656 ~]$ openshift-install version
@@ -214,5 +215,24 @@ ssh-add -l
 
 ```
 
+#### Creating the installation configuration file
 
+- This process will use the [default] section on your aws credentials file.
 
+- If you don't have a [default] section or the credential file, the installer will ask you access and secret key.
+
+- At the end, the installer will create a [default] section on the aws credential file. **(careful)**
+
+```
+openshift-install create install-config --dir=install_files
+
+? SSH Public Key /home/sp81891/.ssh/id_rsa.pub
+? Platform aws
+? AWS Access Key ID AKIAY7EHYMAAOXFCCR2B
+? AWS Secret Access Key [? for help] ****************************************
+INFO Writing AWS credentials to "/home/sp81891/.aws/credentials" (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) 
+? Region eu-west-2
+? Base Domain iaciscp.net
+? Cluster Name ocp4-tst-001
+? Pull Secret [? for help] ******************
+```
