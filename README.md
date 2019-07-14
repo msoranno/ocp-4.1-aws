@@ -186,3 +186,33 @@ In OpenShift Container Platform version 4.1, you can install a customized cluste
 
 > You can use this key to SSH into the master nodes as the user **core**. When you deploy the cluster, the key is added to the core user’s ~/.ssh/authorized_keys list.
 
+
+- If you do not have an SSH key that is configured for password-less authentication on your computer, create one.
+
+```
+ssh-keygen -t rsa -b 4096 -N '' -f <path>/<file_name>
+
+```
+
+- Start the ssh-agent process as a background task
+
+```
+eval "$(ssh-agent -s)"
+```
+
+- Add the ssh private key to the ssh-agent
+
+```
+# add 
+ssh-add ~/.ssh/id_rsa
+
+# list
+
+ssh-add -l
+
+2048 SHA256:GJnFpJMvKyXvCAVWy3TvJQJJdI5RE9BCoIuUAIoPiso /home/sp81891/.ssh/id_rsa (RSA)
+
+```
+
+
+
