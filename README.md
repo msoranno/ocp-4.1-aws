@@ -37,6 +37,24 @@ For clusters that use RHCOS for all machines, updating, or upgrading, OpenShift 
 - Quay. Red hat container registry
 
 
+## Red Hat Enterprise Linux CoreOS (RHCOS)
+
+- RHCOS is the only supported operating system for OpenShift Container Platform control plane, or master, machines. While RHCOS is the default operating system for all cluster machines, you can create compute, or worker, machines that use RHEL as their operating system.
+
+- Management is performed remotely from the OpenShift Container Platform cluster. When you set up your RHCOS machines, you can modify only a few system settings
+
+- Although RHCOS contains features for running the OCI- and libcontainer-formatted containers that Docker requires, it incorporates the CRI-O container engine instead of the Docker container engine
+
+- At the moment, CRI-O is only available as a container engine within OpenShift Container Platform clusters.
+
+- For tasks such as building, copying, and otherwise managing containers, RHCOS replaces the Docker CLI tool with a compatible set of container tools. While direct use of these tools in RHCOS is discouraged, you can use them for debugging purposes.
+
+- RHCOS features transactional upgrades and rollbacks using the rpm -ostree upgrade system.
+
+- Ignition is the utility that is used by RHCOS to manipulate disks during initial configuration. It completes common disk tasks, including partitioning disks, formatting partitions, writing files, and configuring users. On first boot, Ignition reads its configuration from the installation media or the location that you specify and applies the configuration to the machines.
+
+- 
+
 ## Install
 
 ### Register a new domain on aws 
@@ -143,4 +161,28 @@ When you attach the AdministratorAccess policy to the IAM user that you create, 
 https://docs.openshift.com/container-platform/4.1/installing/installing_aws/installing-aws-customizations.html#installing-aws-customizations
 
 In OpenShift Container Platform version 4.1, you can install a customized cluster on infrastructure that the installation program provisions on Amazon Web Services (AWS). To customize the installation, you modify some parameters in the install-config.yaml file before you install the cluster.
+
+#### Obtaining the installation program
+
+- go to https://cloud.redhat.com/openshift/install/aws/installer-provisioned
+
+- Then download installer
+
+	https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-install-linux-4.1.4.tar.gz
+
+	```
+	tar xvf openshift-install-linux-4.1.4.tar.gz
+	sudo mv openshift-install /usr/local/bin
+
+	[sp81891@oc2157818656 ~]$ openshift-install version
+	openshift-install v4.1.4-201906271212-dirty
+	built from commit bf47826c077d16798c556b1bd143a5bbfac14271
+	release image quay.io/openshift-release-dev/ocp-release@sha256:a6c177eb007d20bb00bfd8f829e99bd40137167480112bd5ae1c25e40a4a163a
+
+	```
+
+
+#### Generating an SSH private key and adding it to the agent
+
+> You can use this key to SSH into the master nodes as the user **core**. When you deploy the cluster, the key is added to the core user’s ~/.ssh/authorized_keys list.
 
