@@ -100,6 +100,8 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 
 - AZ's available on eu-west-2 region
 
+- In this case we are going to use eu-west-2a and eu-west-2b for (Masters) and eu-west-2c (Compute)
+
 ```
 [sp81891@oc2157818656 ~]$ aws ec2 describe-availability-zones --region eu-west-2
 {
@@ -135,7 +137,7 @@ iaciscp.net.		600	IN	SOA	ns-125.awsdns-15.com. awsdns-hostmaster.amazon.com. 1 7
 
 - 2 NAT gateways
 
-- 3 EIPs. One for every Nat Gateway attached to every private subnet in every Az.
+- 2 EIPs. One for every Nat Gateway attached to every private subnet in every Az.
 
 - 1 External NLB
 
@@ -237,4 +239,84 @@ INFO Writing AWS credentials to "/home/sp81891/.aws/credentials" (https://docs.a
 ? Base Domain iaciscp.net
 ? Cluster Name ocp4-tst-001
 ? Pull Secret [? for help] ******************
+```
+
+- When the installation finished a **install_files** directory will be created with this content:
+
+```
+drwxrwxr-x. 4 sp81891 sp81891  4096 Jul 14 18:48 ..
+-rw-rw-r--. 1 sp81891 sp81891  4453 Jul 14 19:03 .openshift_install.log
+-rw-r--r--. 1 sp81891 sp81891 13250 Jul 14 19:03 .openshift_install_state.json
+-rw-r--r--. 1 sp81891 sp81891  3709 Jul 14 19:03 install-config.yaml
+```
+
+#### 3.5.4 customize your install-config.yaml
+
+- 3 masters
+	- az: 2a and 2b
+
+- 2 compute
+	- az: 2c
+
+- Note that we are hiding the SECRET texts.
+
+```
+apiVersion: v1
+baseDomain: iaciscp.net
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  platform: 
+    aws:
+      zones:
+      - eu-west-2a
+      - eu-west-2b
+      rootVolume:
+        iops: 2000
+        size: 200
+        type: gp2
+      type: m5.xlarge
+  replicas: 3
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform: 
+    aws:
+      zones:
+      - eu-west-2c
+      rootVolume:
+        iops: 1000
+        size: 200
+        type: gp2
+      type: m5.large
+  replicas: 2
+metadata:
+  creationTimestamp: null
+  name: ocp4-tst-001
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineCIDR: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  aws:
+    region: eu-west-2
+    userTags:
+      iacContact: soranno
+      env: tst
+pullSecret: 'PULL SECRET JSON'
+sshKey: |
+  ssh-rsa SECRET
+```
+
+#### 3.5.5 Deploy the cluster
+
+- **WARNING**: this will be the last chance to backup your **install-config.yaml** because it will be consumed and transformed on terraform files.
+
+
+```
+openshift-install create cluster --dir=install_files --log-level debug
 ```
