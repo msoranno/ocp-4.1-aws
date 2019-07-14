@@ -55,7 +55,7 @@ For clusters that use RHCOS for all machines, updating, or upgrading, OpenShift 
 
 - 
 
-## 3. Install
+## 3. Install OCP 4.1 on AWS
 
 ### 3.1 Register a new domain on aws 
 
@@ -316,15 +316,253 @@ sshKey: |
 
 - **WARNING**: this will be the last chance to backup your **install-config.yaml** because it will be consumed and transformed on terraform files.
 
+- At the end the bootstrap configuration (node, bucket, etc) will be destroyed automatically
 
 ```
 openshift-install create cluster --dir=install_files --log-level debug
 ```
+- After 30 mins you will see
 
-#### 3.5.6 Destroy the cluster
+```
+DEBUG Cluster is initialized                       
+INFO Waiting up to 10m0s for the openshift-console route to be created... 
+DEBUG Route found in openshift-console namespace: console 
+DEBUG Route found in openshift-console namespace: downloads 
+DEBUG OpenShift console route is created           
+INFO Install complete!                            
+INFO To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/home/sp81891/PycharmProjects/githubIBM/D-CLOUD/ocp-4.1-aws/install_files/auth/kubeconfig' 
+INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp4-tst-001.iaciscp.net 
+INFO Login to the console with user: kubeadmin, password: Tr7gv-indjp-pM6Zw-79x2o 
+```
+
+- after installation these are the files and directories created
+
+```
+[sp81891@oc2157818656 ocp-4.1-aws]$ tree
+.
+├── install-config.yaml.backup
+├── install_files
+│   ├── auth
+│   │   ├── kubeadmin-password
+│   │   └── kubeconfig
+│   ├── metadata.json
+│   ├── terraform.aws.auto.tfvars
+│   ├── terraform.tfstate
+│   ├── terraform.tfvars
+│   └── tls
+│       ├── journal-gatewayd.crt
+│       └── journal-gatewayd.key
+└── README.md
+
+```
+
+- all pods created
+
+```
+oc get pods --all-namespaces
+NAMESPACE                                               NAME                                                                 READY   STATUS      RESTARTS   AGE
+openshift-apiserver-operator                            openshift-apiserver-operator-5c6755499b-g5lvx                        1/1     Running     1          100m
+openshift-apiserver                                     apiserver-8t7mm                                                      1/1     Running     0          93m
+openshift-apiserver                                     apiserver-q2vhh                                                      1/1     Running     0          90m
+openshift-apiserver                                     apiserver-sjbsx                                                      1/1     Running     0          92m
+openshift-authentication-operator                       authentication-operator-647879c74-fgnd8                              1/1     Running     0          95m
+openshift-authentication                                oauth-openshift-7b859cbcbd-44plp                                     1/1     Running     0          92m
+openshift-authentication                                oauth-openshift-7b859cbcbd-wsvvh                                     1/1     Running     0          92m
+openshift-cloud-credential-operator                     cloud-credential-operator-6685d5bfbb-w4qq9                           1/1     Running     0          100m
+openshift-cluster-machine-approver                      machine-approver-5cdc9fb764-5mwjm                                    1/1     Running     0          100m
+openshift-cluster-node-tuning-operator                  cluster-node-tuning-operator-7d5749d66d-9th8b                        1/1     Running     0          95m
+openshift-cluster-node-tuning-operator                  tuned-6bcdq                                                          1/1     Running     0          94m
+openshift-cluster-node-tuning-operator                  tuned-d4ntl                                                          1/1     Running     0          95m
+openshift-cluster-node-tuning-operator                  tuned-mhz4t                                                          1/1     Running     0          94m
+openshift-cluster-node-tuning-operator                  tuned-qqmjz                                                          1/1     Running     0          95m
+openshift-cluster-node-tuning-operator                  tuned-tz44n                                                          1/1     Running     0          95m
+openshift-cluster-samples-operator                      cluster-samples-operator-7b99cfcc9b-kzh88                            1/1     Running     0          93m
+openshift-cluster-storage-operator                      cluster-storage-operator-5c7cd6d54f-pv4d6                            1/1     Running     0          94m
+openshift-cluster-version                               cluster-version-operator-857c4f9697-cpb66                            1/1     Running     0          100m
+openshift-console-operator                              console-operator-67c5744676-7z85x                                    1/1     Running     0          94m
+openshift-console                                       console-6b877c86f7-74fb5                                             1/1     Running     0          93m
+openshift-console                                       console-6b877c86f7-vtb4s                                             1/1     Running     0          90m
+openshift-console                                       downloads-9cc78db84-62r56                                            1/1     Running     0          94m
+openshift-console                                       downloads-9cc78db84-lvqpx                                            1/1     Running     0          94m
+openshift-controller-manager-operator                   openshift-controller-manager-operator-cd87b4d9c-fjqsd                1/1     Running     1          100m
+openshift-controller-manager                            controller-manager-55wlp                                             1/1     Running     0          90m
+openshift-controller-manager                            controller-manager-wzpbw                                             1/1     Running     0          92m
+openshift-controller-manager                            controller-manager-z8gx4                                             1/1     Running     0          93m
+openshift-dns-operator                                  dns-operator-76bff8b7d9-l4rwl                                        1/1     Running     0          96m
+openshift-dns                                           dns-default-8k6h6                                                    2/2     Running     0          94m
+openshift-dns                                           dns-default-bxrpp                                                    2/2     Running     0          99m
+openshift-dns                                           dns-default-hz2jd                                                    2/2     Running     0          99m
+openshift-dns                                           dns-default-qks7w                                                    2/2     Running     0          94m
+openshift-dns                                           dns-default-xzfcx                                                    2/2     Running     0          99m
+openshift-etcd                                          etcd-member-ip-10-0-139-59.eu-west-2.compute.internal                2/2     Running     0          98m
+openshift-etcd                                          etcd-member-ip-10-0-141-15.eu-west-2.compute.internal                2/2     Running     0          98m
+openshift-etcd                                          etcd-member-ip-10-0-150-10.eu-west-2.compute.internal                2/2     Running     0          99m
+openshift-image-registry                                cluster-image-registry-operator-c7d86746-8pqf9                       1/1     Running     0          94m
+openshift-image-registry                                image-registry-5cc84f8c4d-rzcvs                                      1/1     Running     0          93m
+openshift-image-registry                                node-ca-42jld                                                        1/1     Running     0          93m
+openshift-image-registry                                node-ca-6b7jd                                                        1/1     Running     0          93m
+openshift-image-registry                                node-ca-kf8zh                                                        1/1     Running     0          93m
+openshift-image-registry                                node-ca-qbrdh                                                        1/1     Running     0          93m
+openshift-image-registry                                node-ca-wh5m7                                                        1/1     Running     0          93m
+openshift-ingress-operator                              ingress-operator-657754d884-x7s4n                                    1/1     Running     0          94m
+openshift-ingress                                       router-default-6494b4999f-mxg88                                      1/1     Running     0          93m
+openshift-ingress                                       router-default-6494b4999f-tzgh2                                      1/1     Running     0          93m
+openshift-kube-apiserver-operator                       kube-apiserver-operator-575b4dbdb-xm6q5                              1/1     Running     1          100m
+openshift-kube-apiserver                                installer-2-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          96m
+openshift-kube-apiserver                                installer-2-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          97m
+openshift-kube-apiserver                                installer-2-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-apiserver                                installer-3-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          95m
+openshift-kube-apiserver                                installer-3-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          94m
+openshift-kube-apiserver                                installer-5-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          89m
+openshift-kube-apiserver                                installer-5-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          90m
+openshift-kube-apiserver                                installer-5-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          92m
+openshift-kube-apiserver                                kube-apiserver-ip-10-0-139-59.eu-west-2.compute.internal             2/2     Running     0          88m
+openshift-kube-apiserver                                kube-apiserver-ip-10-0-141-15.eu-west-2.compute.internal             2/2     Running     0          90m
+openshift-kube-apiserver                                kube-apiserver-ip-10-0-150-10.eu-west-2.compute.internal             2/2     Running     0          92m
+openshift-kube-apiserver                                revision-pruner-2-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          95m
+openshift-kube-apiserver                                revision-pruner-2-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          95m
+openshift-kube-apiserver                                revision-pruner-2-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          95m
+openshift-kube-apiserver                                revision-pruner-3-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          94m
+openshift-kube-apiserver                                revision-pruner-3-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          92m
+openshift-kube-apiserver                                revision-pruner-5-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          87m
+openshift-kube-apiserver                                revision-pruner-5-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          89m
+openshift-kube-apiserver                                revision-pruner-5-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          90m
+openshift-kube-controller-manager-operator              kube-controller-manager-operator-5d8b79f6f6-k2c9h                    1/1     Running     1          100m
+openshift-kube-controller-manager                       installer-4-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-controller-manager                       installer-5-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          95m
+openshift-kube-controller-manager                       installer-5-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          96m
+openshift-kube-controller-manager                       installer-5-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-controller-manager                       installer-6-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          91m
+openshift-kube-controller-manager                       installer-6-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          92m
+openshift-kube-controller-manager                       installer-6-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          93m
+openshift-kube-controller-manager                       kube-controller-manager-ip-10-0-139-59.eu-west-2.compute.internal    2/2     Running     0          91m
+openshift-kube-controller-manager                       kube-controller-manager-ip-10-0-141-15.eu-west-2.compute.internal    2/2     Running     0          92m
+openshift-kube-controller-manager                       kube-controller-manager-ip-10-0-150-10.eu-west-2.compute.internal    2/2     Running     0          93m
+openshift-kube-controller-manager                       revision-pruner-4-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          98m
+openshift-kube-controller-manager                       revision-pruner-5-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          94m
+openshift-kube-controller-manager                       revision-pruner-5-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          95m
+openshift-kube-controller-manager                       revision-pruner-5-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          96m
+openshift-kube-controller-manager                       revision-pruner-6-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          91m
+openshift-kube-controller-manager                       revision-pruner-6-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          91m
+openshift-kube-controller-manager                       revision-pruner-6-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          92m
+openshift-kube-scheduler-operator                       openshift-kube-scheduler-operator-6f8769ff74-4lc92                   1/1     Running     1          100m
+openshift-kube-scheduler                                installer-2-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-scheduler                                installer-3-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-scheduler                                installer-4-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          98m
+openshift-kube-scheduler                                installer-5-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          95m
+openshift-kube-scheduler                                installer-5-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          96m
+openshift-kube-scheduler                                installer-6-ip-10-0-139-59.eu-west-2.compute.internal                0/1     Completed   0          91m
+openshift-kube-scheduler                                installer-6-ip-10-0-141-15.eu-west-2.compute.internal                0/1     Completed   0          90m
+openshift-kube-scheduler                                installer-6-ip-10-0-150-10.eu-west-2.compute.internal                0/1     Completed   0          93m
+openshift-kube-scheduler                                openshift-kube-scheduler-ip-10-0-139-59.eu-west-2.compute.internal   1/1     Running     0          91m
+openshift-kube-scheduler                                openshift-kube-scheduler-ip-10-0-141-15.eu-west-2.compute.internal   1/1     Running     0          90m
+openshift-kube-scheduler                                openshift-kube-scheduler-ip-10-0-150-10.eu-west-2.compute.internal   1/1     Running     0          93m
+openshift-kube-scheduler                                revision-pruner-2-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          98m
+openshift-kube-scheduler                                revision-pruner-3-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          98m
+openshift-kube-scheduler                                revision-pruner-4-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          96m
+openshift-kube-scheduler                                revision-pruner-5-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          93m
+openshift-kube-scheduler                                revision-pruner-5-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          95m
+openshift-kube-scheduler                                revision-pruner-6-ip-10-0-139-59.eu-west-2.compute.internal          0/1     Completed   0          90m
+openshift-kube-scheduler                                revision-pruner-6-ip-10-0-141-15.eu-west-2.compute.internal          0/1     Completed   0          88m
+openshift-kube-scheduler                                revision-pruner-6-ip-10-0-150-10.eu-west-2.compute.internal          0/1     Completed   0          91m
+openshift-machine-api                                   cluster-autoscaler-operator-6844d54489-9sk6r                         1/1     Running     0          100m
+openshift-machine-api                                   machine-api-controllers-5dbfc7b969-qq4w6                             3/3     Running     0          99m
+openshift-machine-api                                   machine-api-operator-5db898985f-mj9qw                                1/1     Running     0          100m
+openshift-machine-config-operator                       etcd-quorum-guard-6cc5dd7676-4ssxm                                   1/1     Running     0          98m
+openshift-machine-config-operator                       etcd-quorum-guard-6cc5dd7676-7fzp9                                   1/1     Running     0          98m
+openshift-machine-config-operator                       etcd-quorum-guard-6cc5dd7676-wj7x9                                   1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-controller-69676779f4-4tngn                           1/1     Running     0          99m
+openshift-machine-config-operator                       machine-config-daemon-f5wzf                                          1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-daemon-gx9dw                                          1/1     Running     0          94m
+openshift-machine-config-operator                       machine-config-daemon-jn6dt                                          1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-daemon-wmvf2                                          1/1     Running     0          94m
+openshift-machine-config-operator                       machine-config-daemon-z9n7l                                          1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-operator-58dd66c9c-qd6sj                              1/1     Running     0          100m
+openshift-machine-config-operator                       machine-config-server-7826q                                          1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-server-jcsxr                                          1/1     Running     0          98m
+openshift-machine-config-operator                       machine-config-server-t8rtx                                          1/1     Running     0          98m
+openshift-marketplace                                   certified-operators-5f6b544444-dpgqt                                 1/1     Running     0          93m
+openshift-marketplace                                   community-operators-f4c4b85c5-pwfs4                                  1/1     Running     0          93m
+openshift-marketplace                                   marketplace-operator-7f844fc74-cj6h8                                 1/1     Running     0          94m
+openshift-marketplace                                   redhat-operators-76dcfbbcfc-qpx8f                                    1/1     Running     0          93m
+openshift-monitoring                                    alertmanager-main-0                                                  3/3     Running     0          92m
+openshift-monitoring                                    alertmanager-main-1                                                  3/3     Running     0          92m
+openshift-monitoring                                    alertmanager-main-2                                                  3/3     Running     0          92m
+openshift-monitoring                                    cluster-monitoring-operator-bdfff7b89-ts4wn                          1/1     Running     0          94m
+openshift-monitoring                                    grafana-d667f6d7b-pfwrp                                              2/2     Running     0          92m
+openshift-monitoring                                    kube-state-metrics-794d7ffd-gkrgj                                    3/3     Running     0          93m
+openshift-monitoring                                    node-exporter-4zkdn                                                  2/2     Running     0          93m
+openshift-monitoring                                    node-exporter-dlg2n                                                  2/2     Running     0          93m
+openshift-monitoring                                    node-exporter-mhpkk                                                  2/2     Running     0          93m
+openshift-monitoring                                    node-exporter-pwt2t                                                  2/2     Running     0          93m
+openshift-monitoring                                    node-exporter-wt5xg                                                  2/2     Running     0          93m
+openshift-monitoring                                    prometheus-adapter-674448f46b-kxf2j                                  1/1     Running     0          91m
+openshift-monitoring                                    prometheus-adapter-674448f46b-rjrjh                                  1/1     Running     0          91m
+openshift-monitoring                                    prometheus-k8s-0                                                     6/6     Running     1          92m
+openshift-monitoring                                    prometheus-k8s-1                                                     6/6     Running     1          92m
+openshift-monitoring                                    prometheus-operator-b7d9db9d4-xv7t5                                  1/1     Running     0          91m
+openshift-monitoring                                    telemeter-client-6445c9d89-w6vlf                                     3/3     Running     0          93m
+openshift-multus                                        multus-2gv2p                                                         1/1     Running     0          94m
+openshift-multus                                        multus-bl6fq                                                         1/1     Running     0          100m
+openshift-multus                                        multus-gzw4k                                                         1/1     Running     0          100m
+openshift-multus                                        multus-pjfpd                                                         1/1     Running     0          94m
+openshift-multus                                        multus-z2bzd                                                         1/1     Running     0          99m
+openshift-network-operator                              network-operator-7859cc7c8c-d4bqg                                    1/1     Running     0          100m
+openshift-operator-lifecycle-manager                    catalog-operator-6f8b655bf4-v4682                                    1/1     Running     0          100m
+openshift-operator-lifecycle-manager                    olm-operator-69bccbdcdc-528jb                                        1/1     Running     0          100m
+openshift-operator-lifecycle-manager                    olm-operators-gsbbv                                                  1/1     Running     0          98m
+openshift-operator-lifecycle-manager                    packageserver-69f7f6c9d8-hnz84                                       1/1     Running     0          97m
+openshift-operator-lifecycle-manager                    packageserver-69f7f6c9d8-jjh4g                                       1/1     Running     0          97m
+openshift-sdn                                           ovs-2hz9j                                                            1/1     Running     0          99m
+openshift-sdn                                           ovs-g9c8f                                                            1/1     Running     0          94m
+openshift-sdn                                           ovs-hvlcd                                                            1/1     Running     0          99m
+openshift-sdn                                           ovs-swr59                                                            1/1     Running     0          99m
+openshift-sdn                                           ovs-t2hj6                                                            1/1     Running     0          94m
+openshift-sdn                                           sdn-54z5k                                                            1/1     Running     0          94m
+openshift-sdn                                           sdn-75zxz                                                            1/1     Running     0          99m
+openshift-sdn                                           sdn-controller-69nh8                                                 1/1     Running     0          99m
+openshift-sdn                                           sdn-controller-6njhs                                                 1/1     Running     0          99m
+openshift-sdn                                           sdn-controller-lblx9                                                 1/1     Running     0          99m
+openshift-sdn                                           sdn-g5qrj                                                            1/1     Running     0          94m
+openshift-sdn                                           sdn-qbglz                                                            1/1     Running     0          99m
+openshift-sdn                                           sdn-rq9pk                                                            1/1     Running     0          99m
+openshift-service-ca-operator                           service-ca-operator-84b4f66d79-qtxmd                                 1/1     Running     0          100m
+openshift-service-ca                                    apiservice-cabundle-injector-9cbfd8669-2898c                         1/1     Running     0          99m
+openshift-service-ca                                    configmap-cabundle-injector-6c9b5cd9b9-5chlw                         1/1     Running     0          99m
+openshift-service-ca                                    service-serving-cert-signer-6b78d4df7f-tkc27                         1/1     Running     0          99m
+openshift-service-catalog-apiserver-operator            openshift-service-catalog-apiserver-operator-7dc6c4cf5d-kjz8r        1/1     Running     0          95m
+openshift-service-catalog-controller-manager-operator   openshift-service-catalog-controller-manager-operator-79d9gwtsw      1/1     Running     0          95m
+
+```
+
+#### 3.5.7 Destroy the cluster
 
 - **WARNING** This will remove all resources previously created and will delete all the configuration files. So, in case you want the create the cluster again a new **install-config.yaml** need to be generated again or restored from backup.
 
 ```
 openshift-install destroy cluster --dir=install_files --log-level debug
+```
+
+
+## 4. Installing the OpenShift Command-line Interface
+
+- Download the last oc version from here https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/
+
+	- This version https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-4.1.4.tar.gz
+
+```
+tar xvf openshift-client-linux-4.1.4.tar.gz
+sudo mv oc /usr/local/bin
+
+oc version
+Client Version: version.Info{Major:"4", Minor:"1+", GitVersion:"v4.1.4-201906271212+6b97d85-dirty", GitCommit:"6b97d85", GitTreeState:"dirty", BuildDate:"2019-06-27T18:11:21Z", GoVersion:"go1.11.6", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"13+", GitVersion:"v1.13.7-eks-c57ff8", GitCommit:"c57ff8e35590932c652433fab07988da79265d5b", GitTreeState:"clean", BuildDate:"2019-06-07T20:43:03Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
+
+```
+
+## 5. Logging into the cluster
+
+```
+export KUBECONFIG=<install path>/install_files/auth/kubeconfig
+oc whoami
 ```
