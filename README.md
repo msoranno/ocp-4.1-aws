@@ -2,11 +2,15 @@
 
 https://docs.openshift.com/container-platform/4.1/welcome/index.html
 
+
+## 0. Cluster info
+
 - Ocp4.0 running cluster : https://console-openshift-console.apps.ocp4-tst-001.iaciscp.net
 
 - Identity providers configured:
 
 	- OAuth github.ibm.com
+		- 
 
 	- Htpasswd
 
@@ -657,3 +661,39 @@ spec:
 This step was done with the UI, by loading a .htpasswd file.
 
 > Administration - cluster settings - global configuration - OAuth - Identity providers - Add
+
+
+## 7.  RBAC
+
+- Create a cluster role binding for github-cluster-admin-group. This group is for cluster-admin only.
+
+```
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: github-cluters-admin
+  selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/github-cluters-admin
+  uid: 42f9a2f5-a6dc-11e9-abee-069fdef98bc6
+  resourceVersion: '209749'
+  creationTimestamp: '2019-07-15T08:40:55Z'
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: github-cluster-admin-group
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+```
+
+- New group and user added
+```
+oc adm groups new github-cluster-admin-group Miguel-Angel-Soranno
+```
+
+- Add more users to group
+
+```
+oc adm groups add-users <group> <user>
+```
+
