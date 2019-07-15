@@ -2,6 +2,17 @@
 
 https://docs.openshift.com/container-platform/4.1/welcome/index.html
 
+- Ocp4.0 running cluster : https://console-openshift-console.apps.ocp4-tst-001.iaciscp.net
+
+- Identity providers configured:
+
+	- OAuth github.ibm.com
+
+	- Htpasswd
+
+
+
+
 
 ## 1. OpenShift Container Platform architecture
 
@@ -569,7 +580,7 @@ openshift-service-catalog-controller-manager-operator   openshift-service-catalo
 ```
 
 
-## 6.  identity provider configuration
+## 6.  identity providers configuration
 
 - The OpenShift Container Platform master includes a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API.
 
@@ -577,6 +588,72 @@ openshift-service-catalog-controller-manager-operator   openshift-service-catalo
 
 - OpenShift Container Platform user names containing /, :, and % are not supported.
 
+
 ### 6.1 Configuring a GitHub or GitHub Enterprise identity provider
 
 - For GitHub Enterprise, go to your GitHub Enterprise home page and then click Settings → Developer settings → Register a new application.
+	- ocp4-tst-001
+
+- Home page URL: https://oauth-openshift.apps.ocp4-tst-001.iaciscp.net
+
+- Authorization call back: https://oauth-openshift.apps.ocp4-tst-001.iaciscp.net/oauth2callback/githubidp/
+	- IMPORTANT: githubidp must match with the identity provider name of the custom resource
+
+- click Register application. And this will return a valid **client ID** and **client secret**
+
+```
+Client ID
+5e469bcb2fe54c9e6fd1
+Client Secret
+0b9f6a17c17f2521c51f414f65ddac9568f2ac2e
+```
+
+#### 6.1.1 Creating the secret
+
+- Identity providers use OpenShift Container Platform Secrets in the openshift-config namespace to contain the client secret, client certificates, and keys.
+
+```
+oc create secret generic githubclientsecret --from-literal=clientSecret=0b9f6a17c17f2521c51f414f65ddac9568f2ac2e -n openshift-config
+```
+
+#### 6.1.2 Creating a configmap
+
+- Identity providers use OpenShift Container Platform ConfigMaps in the openshift-config namespace to contain the certificate authority bundle. These are primarily used to contain certificate bundles needed by the identity provider.
+
+- Export certificate from github.com 
+
+- In this case we don't have certificates on our openshift platform, but in case we do: (THIS STEP IS NOT NECESSARY)
+
+```
+oc create configmap ca-github-config-map --from-file=ca.crt=github_ca.crt -n openshift-config
+```
+
+#### 6.1.2 Creating a github Custom Resource
+
+```
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: githubidp
+    challenge: false
+    login: true
+    mappingMethod: claim 
+    type: GitHub
+    github:
+      clientID: "5e469bcb2fe54c9e6fd1"
+      clientSecret: 
+        name: githubclientsecret
+      hostname: github.ibm.com
+      teams:
+        - d-cloud/d-iac
+```
+
+
+### 6.1 Configuring a HTPasswd identity provider
+
+This step was done with the UI, by loading a .htpasswd file.
+
+> Administration - cluster settings - global configuration - OAuth - Identity providers - Add
