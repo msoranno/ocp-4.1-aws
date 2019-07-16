@@ -697,3 +697,8 @@ oc adm groups new github-cluster-admin-group Miguel-Angel-Soranno
 oc adm groups add-users <group> <user>
 ```
 
+- Remove member from group
+
+```
+oc adm groups remove-users github-cluster-admin-group miguel.angel.soranno@ibm.com
+```
