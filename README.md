@@ -634,6 +634,11 @@ oc create configmap ca-github-config-map --from-file=ca.crt=github_ca.crt -n ope
 
 #### 6.1.2 Creating a github Custom Resource
 
+- clientID: is the client returned when configuring github identity provider
+- clientSecret: is the secret text returned when configuring github identity provider
+
+> With this OAuth configuration every user with access to the d-lab github org can access the ocp cluster as admin default role.
+
 ```
 apiVersion: config.openshift.io/v1
 kind: OAuth
@@ -641,18 +646,18 @@ metadata:
   name: cluster
 spec:
   identityProviders:
-  - name: githubidp
-    challenge: false
-    login: true
-    mappingMethod: claim 
-    type: GitHub
-    github:
-      clientID: "5e469bcb2fe54c9e6fd1"
-      clientSecret: 
-        name: githubclientsecret
-      hostname: github.ibm.com
-      teams:
-        - d-cloud/d-iac
+    - challenge: false
+      github:
+        clientID: 5e469bcb2fe54c9e6fd1
+        clientSecret:
+          name: githubclientsecret
+        hostname: github.ibm.com
+        organizations:
+          - d-lab
+      login: true
+      mappingMethod: claim
+      name: githubidp
+      type: GitHub
 ```
 
 
@@ -672,10 +677,6 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: github-cluters-admin
-  selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/github-cluters-admin
-  uid: 42f9a2f5-a6dc-11e9-abee-069fdef98bc6
-  resourceVersion: '209749'
-  creationTimestamp: '2019-07-15T08:40:55Z'
 subjects:
   - kind: Group
     apiGroup: rbac.authorization.k8s.io
