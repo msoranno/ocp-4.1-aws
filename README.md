@@ -10,9 +10,10 @@ https://docs.openshift.com/container-platform/4.1/welcome/index.html
 - Identity providers configured:
 
 	- OAuth github.ibm.com
-		- 
+		- every member of the d-lab org can access the cluster as admin role (project manager)
 
 	- Htpasswd
+		- admin user (cluster-admin)
 
 
 
@@ -702,4 +703,12 @@ oc adm groups add-users <group> <user>
 
 ```
 oc adm groups remove-users github-cluster-admin-group miguel.angel.soranno@ibm.com
+```
+
+## 8. Removing the kubeadmin user
+
+After you define an identity provider and create a new cluster-admin user, you can remove the kubeadmin to improve cluster security.
+
+```
+oc delete secrets kubeadmin -n kube-system
 ```
